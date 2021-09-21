@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 from data import db, preprocess
-from model import lstm_model
+from model import lstm_model, evaluate
 
 def run():
     # create_record_table()
@@ -31,14 +31,20 @@ def run():
     # print(test_x.shape)
     model = lstm_model.create_lstm_model(look_back)
     lstm_model.model_fit(model, train_x, train_y)
-    # evaluate(model, train_x, train_y, test_x, test_y, scaler)
 
+    print('train_x shape:', train_x.shape)
     train_predict = model.predict(train_x)
     test_predict = model.predict(test_x)
+    print('train_predict shape:', train_predict.shape)
     dataset = scaler.inverse_transform(dataset)
     train_predict = scaler.inverse_transform(train_predict)
     test_predict = scaler.inverse_transform(test_predict)
     lstm_model.draw(dataset, train_predict, test_predict, look_back)
+
+    print('train_y shape:', train_y.shape)
+    train_y = scaler.inverse_transform(train_y)
+    test_y = scaler.inverse_transform(test_y)
+    evaluate.evaluate(train_y, train_predict, test_y, test_predict)
 
 
 if __name__ == '__main__':

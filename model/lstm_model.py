@@ -4,8 +4,6 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 
-from sklearn.metrics import mean_squared_error
-
 
 def create_lstm_model(look_back):
     """构造LSTM模型。
@@ -20,42 +18,10 @@ def create_lstm_model(look_back):
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
+
 def model_fit(model, train_x, train_y):
     """训练模型"""
     model.fit(train_x, train_y, epochs=100, batch_size=1, verbose=2)
-
-
-
-def evaluate(model, train_x, train_y, test_x, test_y, scaler):
-    '''评估模型。
-    输入训练数据和测试数据，模型输出预测结果。通过预测结果和真实结果比较评估模型。
-
-    args:
-        model: lstm模型
-        train_x: 训练数据的特征
-        train_y: 训练数据的标签
-        test_x: 测试数据的特征
-        test_y: 测试数据的标签
-        scaler: 做缩放的对象，用于将归一化的数据还原
-    returns:
-        二元组，(train_predict, test_predict)
-        train_predict: 训练数据的预测结果
-        test_predict: 测试数据的预测结果
-    '''
-    # make predictions
-    train_predict = model.predict(train_x)
-    test_predict = model.predict(test_x)
-    # invert predictions
-    train_predict = scaler.inverse_transform(train_predict)
-    train_y = scaler.inverse_transform([train_y])
-    test_predict = scaler.inverse_transform(test_predict)
-    test_y = scaler.inverse_transform([test_y])
-    # calculate root mean squared error
-    train_score = math.sqrt(mean_squared_error(train_y[0], train_predict[:, 0]))
-    print('Train Score: %.2f RMSE' % (train_score))
-    testScore = math.sqrt(mean_squared_error(test_y[0], test_predict[:, 0]))
-    print('Test Score: %.2f RMSE' % (test_score))
-    return train_predict, test_predict
 
 
 def draw(dataset, train_predict, test_predict, look_back):
